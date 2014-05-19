@@ -8,9 +8,8 @@ def get_content_from_files(index='menu.html'):
     index_body = index_doc.getroot().body
     for fname in index_body.xpath('.//table/tr/td/p/a/@href'):
         doc = html.parse(fname)
-        body = doc.getroot().body
         # this is where the content is:
-        yield from body.xpath('.//center/table/tr/td/*')
+        yield from doc.xpath('.//center/table/tr/td/*')
 
 
 def parse_naslov_html(fname='naslov.html'):
@@ -18,8 +17,7 @@ def parse_naslov_html(fname='naslov.html'):
     head = doc.getroot().head
     title  = head.find('title')
 
-    body = doc.getroot().body
-    td1, td2 = body.xpath('.//table/tr/td')
+    td1, td2 = doc.xpath('.//table/tr/td')
 
     # remove any images from the result
     for el in td1.xpath('.//img'):
