@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 from lxml import html, etree
-from glob import iglob
 
 
 def get_content_from_files(index='menu.html'):
