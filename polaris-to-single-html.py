@@ -38,15 +38,10 @@ def create_head(orig_title):
     authors = [ reverse_last_first_name(author) for author in authors.split('/')]
 
     head = etree.Element('head')
-    charset = etree.SubElement(head, 'meta', {'charset': 'utf-8'})
-    lang = etree.SubElement(head, 'meta', {'name': 'DC.language', 'content': 'sr'})
-
-    author = etree.SubElement(head, 'meta')
-    author.attrib['name'] = 'Author'
-    author.attrib['content'] = ' & '.join(authors)
-
-    title_el = etree.SubElement(head, 'title')
-    title_el.text = title.title().strip()
+    etree.SubElement(head, 'meta', charset='utf-8')
+    etree.SubElement(head, 'meta', name='DC.language', content='sr')
+    etree.SubElement(head, 'meta', name='Author', content=' & '.join(authors))
+    etree.SubElement(head, 'title').text = title.title().strip()
     return head
 
 
