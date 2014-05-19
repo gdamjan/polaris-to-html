@@ -47,20 +47,23 @@ def create_head(orig_title):
     return head
 
 
-def main():
-    page = etree.Element('html')
-    doc = etree.ElementTree(page)
-
+def create_document():
     title, front_page = parse_naslov_html()
     head = create_head(title.text)
-    page.append(head)
 
-    body = etree.SubElement(page, 'body')
+    body = etree.Element('body')
     body.extend(front_page)
     body.extend(get_content_from_files())
 
-    outFile = open('single-page-book.html', 'wb')
-    doc.write(outFile, encoding='utf-8', method='html', pretty_print=True)
+    doc = etree.Element('html')
+    doc.append(head)
+    doc.append(body)
+    return doc
+
 
 if __name__ == '__main__':
-    main()
+    doc = create_document()
+    with open('single-page-book.html', 'wb') as out:
+        out.write(html.tostring(doc, method='html', encoding='utf-8',
+                                pretty_print=True,
+                                doctype='<!DOCTYPE html>'))
