@@ -1,8 +1,7 @@
 #! /usr/bin/env python
-#
-#
-#
+
 from lxml import html, etree
+
 from glob import iglob
 
 def get_content_from_files(glob="p*.html"):
@@ -12,6 +11,7 @@ def get_content_from_files(glob="p*.html"):
         # this is where the content is:
         yield from body.xpath('.//center/table/tr/td/*')
 
+
 def get_title_naslovna():
     doc = html.parse('naslov.html')
     head = doc.getroot().head
@@ -20,10 +20,16 @@ def get_title_naslovna():
     body = doc.getroot().body
     td1, td2 = body.xpath('.//table/tr/td')
 
+    # remove any images from the result
     for el in td1.xpath('.//img'):
         el.drop_tree()
 
+    # take the last image of the second table cell and add it to the result
+    img = td2.xpath('.//img')[-1]
+    img.attrib['src'] = img.attrib['src'].rsplit('/')[-1]
+    td1.append(img)
     return title, td1
+
 
 def main():
     page = etree.Element('html')
@@ -42,7 +48,7 @@ def main():
     for el in get_content_from_files():
         body.append(el)
 
-    outFile = open('the-book.html', 'wb')
+    outFile = open('single-page-book.html', 'wb')
     doc.write(outFile, encoding='utf-8', method='html', pretty_print=True)
 
 if __name__ == '__main__':
