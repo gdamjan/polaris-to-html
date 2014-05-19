@@ -47,7 +47,7 @@ def parse_naslov_html(fname='naslov.html'):
 
 
 def create_head(meta):
-    head = etree.Element('head')
+    head = html.Element('head')
     etree.SubElement(head, 'meta', charset='utf-8')
     etree.SubElement(head, 'meta', name='dc.language', content='sr')
     etree.SubElement(head, 'meta', name='dc.publisher', content=meta['publisher'])
@@ -61,11 +61,11 @@ def create_document():
     meta, front_page_content = parse_naslov_html()
     head = create_head(meta)
 
-    body = etree.Element('body')
+    body = html.Element('body')
     body.extend(front_page_content)
     body.extend(get_content_from_files())
 
-    doc = etree.Element('html')
+    doc = html.Element('html')
     doc.append(head)
     doc.append(body)
     return doc
@@ -73,7 +73,9 @@ def create_document():
 
 if __name__ == '__main__':
     doc = create_document()
+    tree = etree.ElementTree(doc)
     with open('single-page-book.html', 'wb') as out:
-        out.write(html.tostring(doc, method='html', encoding='utf-8',
+        out.write(html.tostring(tree
+                                , method='html', encoding='utf-8',
                                 pretty_print=True,
                                 doctype='<!DOCTYPE html>'))
