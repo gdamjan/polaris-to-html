@@ -24,10 +24,11 @@ def get_title_naslovna():
     for el in td1.xpath('.//img'):
         el.drop_tree()
 
-    # take the last image of the second table cell and add it to the result
-    img = td2.xpath('.//img')[-1]
-    img.attrib['src'] = img.attrib['src'].rsplit('/')[-1]
-    td1.append(img)
+    # commented this out, turned out ugly
+    ## take the last image of the second table cell and add it to the result
+    #img = td2.xpath('.//img')[-1]
+    #img.attrib['src'] = img.attrib['src'].rsplit('/')[-1]
+    #td1.append(img)
     return title, td1
 
 
