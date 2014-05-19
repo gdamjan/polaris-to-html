@@ -23,6 +23,14 @@ def parse_naslov_html(fname='naslov.html'):
     for el in td1.xpath('.//img'):
         el.drop_tree()
 
+    series, series_index = doc.xpath('.//table/tr/td/font/p/font/font/p/font[1]/text()')
+    series = re.match(r'Serija "(.*)"', series.strip()).group(1)
+    series_index = re.match(r'\((\d*)\)', series_index.strip()).group(1)
+
+    publisher, pubdate = doc.xpath('.//table/tr/td/font/p/font/font/p[2]/font/p/font/text()')
+    publisher = publisher.strip()
+    pubdate = pubdate.strip()
+
     ## take the last image of the second table cell and add it to the result
     #img = td2.xpath('.//img')[-1]
     #img.attrib['src'] = img.attrib['src'].rsplit('/')[-1]
@@ -39,7 +47,9 @@ def create_head(orig_title):
 
     head = etree.Element('head')
     etree.SubElement(head, 'meta', charset='utf-8')
-    etree.SubElement(head, 'meta', name='DC.language', content='sr')
+    etree.SubElement(head, 'meta', name='dc.publisher', content='Polaris')
+    #etree.SubElement(head, 'meta', name='dc.pubdate', content='')
+    etree.SubElement(head, 'meta', name='dc.language', content='sr')
     etree.SubElement(head, 'meta', name='Author', content=' & '.join(authors))
     etree.SubElement(head, 'title').text = title.title().strip()
     return head
