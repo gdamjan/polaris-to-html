@@ -37,7 +37,7 @@ def parse_naslov_html(fname='naslov.html'):
 
     publisher, pubdate = doc.xpath('.//table/tr/td/font/p/font/font/p[2]/font/p/font/text()')
     meta['publisher'] = publisher.strip()
-    meta['pubdate'] = re.match(r'(\d*)', pubdate.strip()).group(1)
+    meta['pubdate'] = pubdate.strip()
 
     ## take the last image of the second table cell and add it to the result
     #img = td2.xpath('.//img')[-1]
