@@ -31,15 +31,20 @@ def parse_naslov_html(fname='naslov.html'):
 
 
 def create_head(orig_title):
+    def reverse_last_first_name(author):
+        return ' '.join(reversed(author.split(' '))).strip()
+
     authors, title = orig_title.rsplit(',', 1)
+    authors = [ reverse_last_first_name(author) for author in authors.split('/')]
+
     head = etree.Element('head')
-    charset = etree.SubElement(head, 'meta')
-    charset.attrib['charset'] = 'utf-8'
-    for author in authors.split('/'):
-        author_el = etree.SubElement(head, 'meta')
-        author_el.attrib['name'] = 'Author'
-        # reverse sur-name given-name
-        author_el.attrib['content'] = ' '.join(reversed(author.split(' '))).strip()
+    charset = etree.SubElement(head, 'meta', {'charset': 'utf-8'})
+    lang = etree.SubElement(head, 'meta', {'name': 'DC.language', 'content': 'sr'})
+
+    author = etree.SubElement(head, 'meta')
+    author.attrib['name'] = 'Author'
+    author.attrib['content'] = ' & '.join(authors)
+
     title_el = etree.SubElement(head, 'title')
     title_el.text = title.title().strip()
     return head
