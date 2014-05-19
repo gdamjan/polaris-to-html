@@ -37,7 +37,7 @@ def parse_naslov_html(fname='naslov.html'):
 
     publisher, pubdate = doc.xpath('.//table/tr/td/font/p/font/font/p[2]/font/p/font/text()')
     meta['publisher'] = publisher.strip()
-    meta['pubdate'] = pubdate.strip()
+    meta['pubdate'] = re.match(r'(\d*)', pubdate.strip()).group(1)
 
     ## take the last image of the second table cell and add it to the result
     #img = td2.xpath('.//img')[-1]
@@ -51,7 +51,7 @@ def create_head(meta):
     etree.SubElement(head, 'meta', charset='utf-8')
     etree.SubElement(head, 'meta', name='dc.language', content='sr')
     etree.SubElement(head, 'meta', name='dc.publisher', content=meta['publisher'])
-    etree.SubElement(head, 'meta', name='dc.pubdate', content=meta['pubdate'])
+    etree.SubElement(head, 'meta', name='dc.date.published', content=meta['pubdate'])
     etree.SubElement(head, 'meta', name='Author', content=meta['authors'])
     etree.SubElement(head, 'title').text = meta['title']
     return head
