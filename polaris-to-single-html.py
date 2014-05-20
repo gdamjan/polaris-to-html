@@ -11,10 +11,10 @@ def parse_html(fname):
 def get_content_from_files(index='menu.html'):
     index_doc = parse_html(index)
     index_body = index_doc.getroot().find('body')
-    for fname in index_body.xpath('.//table/tr/td/p/a/@href'):
+    for fname in index_body.xpath('.//table//tr/td/p/a/@href'):
         doc = parse_html(fname)
         # this is where the content is:
-        yield from doc.xpath('.//center/table/tr/td/*')
+        yield from doc.xpath('.//center/table//tr/td/*')
 
 
 def parse_naslov_html(fname='naslov.html'):
@@ -30,14 +30,14 @@ def parse_naslov_html(fname='naslov.html'):
     meta['authors'] = ' & '.join([ reverse_last_first_name(author) for author in authors.split('/')])
     meta['title'] = title.strip().title()
 
-    content = doc.xpath('.//table/tr/td[1]')[0]
+    content = doc.xpath('.//table//tr/td[1]')[0]
 
     # remove any images from the result
     for el in content.xpath('.//img'):
         el.getparent().remove(el)
 
     try:
-        el = content.xpath('font/p/font/font/p/font')[0]
+        el = content.xpath('.//font/p/font/font/p/font')[0]
         series = el.text.strip()
         meta['series'] = re.match(r'Serija "(.*)"', series).group(1)
         series_index = el[0].tail.strip()
