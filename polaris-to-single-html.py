@@ -1,13 +1,16 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 from lxml import html, etree
 import re
 
+def parse_html(fname):
+    return html.parse(fname)
+
 def get_content_from_files(index='menu.html'):
-    index_doc = html.parse(index)
+    index_doc = parse_html(index)
     index_body = index_doc.getroot().body
     for fname in index_body.xpath('.//table/tr/td/p/a/@href'):
-        doc = html.parse(fname)
+        doc = parse_html(fname)
         # this is where the content is:
         yield from doc.xpath('.//center/table/tr/td/*')
 
@@ -15,7 +18,7 @@ def get_content_from_files(index='menu.html'):
 def parse_naslov_html(fname='naslov.html'):
     meta = {}
 
-    doc = html.parse(fname)
+    doc = parse_html(fname)
     head = doc.getroot().head
 
     def reverse_last_first_name(author):
