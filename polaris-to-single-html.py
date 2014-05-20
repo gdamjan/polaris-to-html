@@ -25,35 +25,48 @@ def parse_naslov_html(fname='naslov.html'):
     meta['authors'] = ' & '.join([ reverse_last_first_name(author) for author in authors.split('/')])
     meta['title'] = title.strip().title()
 
-    td1, td2 = doc.xpath('.//table/tr/td')
+    content = doc.xpath('.//table/tr/td[1]')[0]
 
     # remove any images from the result
-    for el in td1.xpath('.//img'):
+    for el in content.xpath('.//img'):
         el.drop_tree()
 
-    series, series_index = doc.xpath('.//table/tr/td/font/p/font/font/p/font[1]/text()')
-    meta['series'] = re.match(r'Serija "(.*)"', series.strip()).group(1)
-    meta['series_index'] = re.match(r'\((\d*)\)', series_index.strip()).group(1)
+    try:
+        el = content.xpath('font/p/font/font/p/font')[0]
+        series = el.text.strip()
+        meta['series'] = re.match(r'Serija "(.*)"', series).group(1)
+        series_index = el[0].tail.strip()
+        meta['series_index'] = re.match(r'\((\d*)\)', series_index).group(1)
+    except:
+        pass
 
-    publisher, pubdate = doc.xpath('.//table/tr/td/font/p/font/font/p[2]/font/p/font/text()')
-    meta['publisher'] = publisher.strip()
-    meta['pubdate'] = pubdate.strip()
+    try:
+        meta['publisher'] = content.xpath('.//font[last()]')[0].text.strip()
+        meta['pubdate'] = content.xpath('.//br[last()]')[0].tail.strip()
+    except:
+        pass
 
-    ## take the last image of the second table cell and add it to the result
-    #img = td2.xpath('.//img')[-1]
-    #img.attrib['src'] = img.attrib['src'].rsplit('/')[-1]
-    #td1.append(img)
-    return meta, td1.iterchildren()
+    # take the last image of the second table cell
+    img = doc.xpath('.//img[last()]')[0]
+    meta['cover-image'] = img.attrib['src']
+    return meta, content.iterchildren()
 
 
 def create_head(meta):
     head = html.Element('head')
     etree.SubElement(head, 'meta', charset='utf-8')
-    etree.SubElement(head, 'meta', name='dc.language', content='sr')
-    etree.SubElement(head, 'meta', name='dc.publisher', content=meta['publisher'])
-    etree.SubElement(head, 'meta', name='dc.date.published', content=meta['pubdate'])
-    etree.SubElement(head, 'meta', name='Author', content=meta['authors'])
     etree.SubElement(head, 'title').text = meta['title']
+    etree.SubElement(head, 'meta', name='Author', content=meta['authors'])
+    etree.SubElement(head, 'meta', name='cover-image', content=meta['cover-image'])
+    etree.SubElement(head, 'meta', name='dc.language', content='sr')
+    if 'publisher' in meta:
+        etree.SubElement(head, 'meta', name='dc.publisher', content=meta['publisher'])
+    if 'pubdate' in meta:
+        etree.SubElement(head, 'meta', name='dc.date.published', content=meta['pubdate'])
+    if 'series' in meta:
+        etree.SubElement(head, 'meta', name='series', content=meta['series'])
+    if 'series_index' in meta:
+        etree.SubElement(head, 'meta', name='series_index', content=meta['series_index'])
     return head
 
 
@@ -75,7 +88,6 @@ if __name__ == '__main__':
     doc = create_document()
     tree = etree.ElementTree(doc)
     with open('single-page-book.html', 'wb') as out:
-        out.write(html.tostring(tree
-                                , method='html', encoding='utf-8',
+        out.write(html.tostring(tree, method='html', encoding='utf-8',
                                 pretty_print=True,
                                 doctype='<!DOCTYPE html>'))
