@@ -1,14 +1,16 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python
 
 from lxml import html, etree
+import html5lib
 import re
 
 def parse_html(fname):
     return html.parse(fname)
+    return html5lib.parse(open(fname, 'rb'), treebuilder='lxml', namespaceHTMLElements=False)
 
 def get_content_from_files(index='menu.html'):
     index_doc = parse_html(index)
-    index_body = index_doc.getroot().body
+    index_body = index_doc.getroot().find('body')
     for fname in index_body.xpath('.//table/tr/td/p/a/@href'):
         doc = parse_html(fname)
         # this is where the content is:
@@ -19,7 +21,7 @@ def parse_naslov_html(fname='naslov.html'):
     meta = {}
 
     doc = parse_html(fname)
-    head = doc.getroot().head
+    head = doc.getroot().find('head')
 
     def reverse_last_first_name(author):
         return ' '.join(reversed(author.split(' '))).strip()
@@ -32,7 +34,7 @@ def parse_naslov_html(fname='naslov.html'):
 
     # remove any images from the result
     for el in content.xpath('.//img'):
-        el.drop_tree()
+        el.getparent().remove(el)
 
     try:
         el = content.xpath('font/p/font/font/p/font')[0]
