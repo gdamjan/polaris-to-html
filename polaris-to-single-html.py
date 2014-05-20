@@ -1,12 +1,16 @@
 #! /usr/bin/env python
 
 from lxml import html, etree
-import html5lib
 import re
 
 def parse_html(fname):
     return html.parse(fname)
-    return html5lib.parse(open(fname, 'rb'), treebuilder='lxml', namespaceHTMLElements=False)
+    # none of these works:
+    #from bs4 import BeautifulSoup
+    #return BeautifulSoup(open('naslov.html', 'rb'), "lxml")
+    #import html5lib
+    #parser = html5lib.HTMLParser(tree=html5lib.treebuilders.getTreeBuilder("lxml"), namespaceHTMLElements=False, strict=False)
+    #return parser.parse(open(fname, 'rb'))
 
 def get_content_from_files(index='menu.html'):
     index_doc = parse_html(index)
