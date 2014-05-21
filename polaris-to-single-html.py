@@ -1,7 +1,7 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 from lxml import html, etree
-import re
+import re, os, sys
 
 def parse_html(fname):
     return html.parse(fname)
@@ -90,11 +90,11 @@ def create_document():
     doc = html.Element('html')
     doc.append(head)
     doc.append(body)
-    return doc
+    return doc, meta
 
 
 if __name__ == '__main__':
-    doc = create_document()
+    doc, meta = create_document()
     tree = etree.ElementTree(doc)
     with open('single-page-book.html', 'wb') as out:
         out.write(html.tostring(tree, method='html', encoding='utf-8',
