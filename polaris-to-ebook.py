@@ -117,22 +117,29 @@ def create_cover_page(meta):
         ))
     return cover
 
-
+_css = '''\
+.my-cover-page .authors {
+   font-size: 150%;
+   font-weight: bold;
+   margin-bottom: 0.6em;
+}'''
 def create_head(meta):
-    head = html.Element('head')
-    etree.SubElement(head, 'meta', charset='utf-8')
-    etree.SubElement(head, 'title').text = meta['title']
+    head = E.HEAD(
+        E.STYLE(_css),
+        E.META(charset='utf8'),
+        E.TITLE(meta['title']),
+        E.META(name='dc.language', content='sr')
+    )
     if meta['authors']:
-        etree.SubElement(head, 'meta', name='Author', content=meta['authors'])
-    etree.SubElement(head, 'meta', name='dc.language', content='sr')
+        head.append(E.META(name='Author', content=meta['authors']))
     if 'publisher' in meta:
-        etree.SubElement(head, 'meta', name='dc.publisher', content=meta['publisher'])
+        head.append(E.META(name='dc.publisher', content=meta['publisher']))
     if 'pubdate' in meta:
-        etree.SubElement(head, 'meta', name='dc.date.published', content=meta['pubdate'])
+        head.append(E.META(name='dc.date.published', content=meta['pubdate']))
     if 'series' in meta:
-        etree.SubElement(head, 'meta', name='series', content=meta['series'])
+        head.append(E.META(name='series', content=meta['series']))
     if 'series_index' in meta:
-        etree.SubElement(head, 'meta', name='series_index', content=meta['series_index'])
+        head.append(E.META(name='series_index', content=meta['series_index']))
     return head
 
 
