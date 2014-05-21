@@ -150,9 +150,10 @@ def ebook_convert(format, meta):
     cmd = ['ebook-convert', 'single-page-book.html', ebook_fname,
          '--cover', meta['cover-image'],
          '--level1-toc', meta['level1-toc'],
-         '--level2-toc', meta['level2-toc']
-         '--level3-toc', meta['level3-toc']
-         "--page-breaks-before=//*[name()='h2' or name()='h3']"]
+         '--level2-toc', meta['level2-toc'],
+         '--level3-toc', meta['level3-toc'],
+         "--page-breaks-before=//*[name()='h2' or name()='h3']"
+    ]
     if 'series' in meta:
         cmd.append('--series=%s' % meta['series'])
     if 'series_index' in meta:
