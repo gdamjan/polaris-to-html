@@ -163,7 +163,7 @@ def ebook_convert(format, meta):
          '--level1-toc', meta['level1-toc'],
          '--level2-toc', meta['level2-toc'],
          '--level3-toc', meta['level3-toc'],
-         "--page-breaks-before=//*[name()='h2' or name()='h3']"
+         "--page-breaks-before=//*[name()='h1' or name()='h2' or name()='h3']"
     ]
     if 'series' in meta:
         cmd.append('--series=%s' % meta['series'])
