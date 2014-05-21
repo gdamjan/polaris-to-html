@@ -68,10 +68,14 @@ def extract_metadata(fname='naslov.html'):
 
     content = doc.xpath('.//table//tr/td[1]/font[1]')[0]
 
-    meta['coverpage-author(s)'] = content[0].text.strip()
-    meta['coverpage-title'] = content[1][0][0].text.strip()
-    meta['coverpage-translator'] = content[1][0][2].text.strip()
-    meta['coverpage-origtitle'] = content[1][0][2][0].text.strip()
+    try:
+        # a book that has author(s)
+        meta['coverpage-author(s)'] = content[0].text.strip()
+        meta['coverpage-title'] = content[1][0][0].text.strip()
+        meta['coverpage-translator'] = content[1][0][2].text.strip()
+        meta['coverpage-orig-title'] = content[1][0][2][0].text.strip()
+    except:
+        meta['coverpage-title'] = content[0][0][0].text.strip()
 
     try:
         el = content.xpath('.//font/p[2]/font')[0]
@@ -96,9 +100,9 @@ def extract_metadata(fname='naslov.html'):
 def create_cover_page(meta):
     cover = E.DIV(E.CLASS('my-cover-page'),
         E.DIV(E.CLASS('title'), meta['coverpage-title']),
-        E.DIV(E.CLASS('authors'), meta['coverpage-author(s)']),
-        E.DIV(E.CLASS('translator'), meta['coverpage-translator']),
-        E.DIV(E.CLASS('orig-title'), meta['coverpage-origtitle'])
+        E.DIV(E.CLASS('authors'), meta.get('coverpage-author(s)', '')),
+        E.DIV(E.CLASS('translator'), meta.get('coverpage-translator', '')),
+        E.DIV(E.CLASS('orig-title'), meta.get('coverpage-orig-title', ''))
     )
     if 'series' in meta:
         series_index = meta.get('series_index', '')
