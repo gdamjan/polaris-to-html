@@ -26,8 +26,6 @@ def reformat_chapter(chapter):
     for para in paragraphs:
         p = html.Element('p')
         p.text = para.text.lstrip().replace('\r\n', '\n')
-        if para.tail:
-            p.tail = para.tail.replace('\r\n', '\n')
         yield p
         for el in para:
             if el.tag == 'br':
@@ -44,6 +42,10 @@ def reformat_chapter(chapter):
                 if el.tail:
                     el.tail = el.tail.replace('\r\n', '\n')
                 p.append(el)
+        if para.tail:
+            p = html.Element('p')
+            p.text = para.tail.replace('\r\n', '\n')
+            yield p
 
 def get_content_from_files(index='menu.html'):
     index_doc = parse_html(index)
