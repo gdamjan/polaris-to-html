@@ -33,12 +33,14 @@ def reformat_chapter(chapter):
             if el.tag == 'br':
                 # create new paragraph for each <br> tag
                 p = html.Element('p')
-                p.text = el.tail.lstrip().replace('\r\n', '\n')
+                if el.tail:
+                    p.text = el.tail.lstrip().replace('\r\n', '\n')
                 p.tail = '\n'
                 yield p
             else:
                 # if this is not a br element, just add it to the last <P> element
-                el.text = el.text.replace('\r\n', '\n')
+                if el.text:
+                    el.text = el.text.replace('\r\n', '\n')
                 if el.tail:
                     el.tail = el.tail.replace('\r\n', '\n')
                 p.append(el)
