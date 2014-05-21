@@ -94,21 +94,21 @@ def extract_metadata(fname='naslov.html'):
     return meta
 
 def create_cover_page(meta):
-    cover = E.DIV(E.CLASS('cover-page'),
-        E.H1(meta['coverpage-title']),
-        E.DIV(meta['coverpage-author(s)']),
-        E.DIV(meta['coverpage-translator']),
-        E.DIV(meta['coverpage-origtitle'])
+    cover = E.DIV(E.CLASS('my-cover-page'),
+        E.DIV(E.CLASS('title'), meta['coverpage-title']),
+        E.DIV(E.CLASS('authors'), meta['coverpage-author(s)']),
+        E.DIV(E.CLASS('translator'), meta['coverpage-translator']),
+        E.DIV(E.CLASS('orig-title'), meta['coverpage-origtitle'])
     )
     if 'series' in meta:
         series_index = meta.get('series_index', '')
-        cover.append(E.DIV(
+        cover.append(E.DIV(E.CLASS('series'),
             meta['series'], ' - (%s)' % series_index if series_index else ''
         ))
     cover.append(E.HR())
     if 'publisher' in meta:
         pubdate = meta.get('pubdate', '')
-        cover.append(E.DIV(
+        cover.append(E.DIV(E.CLASS('publisher'),
             meta['publisher'], ' - %s' % pubdate if pubdate else ''
         ))
     return cover
