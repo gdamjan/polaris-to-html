@@ -99,7 +99,7 @@ def extract_metadata(fname='naslov.html'):
 
 def create_cover_page(meta):
     cover = E.DIV(E.CLASS('my-cover-page'),
-        E.DIV(E.CLASS('title'), meta['coverpage-title']),
+        E.H1(E.CLASS('title'), meta['coverpage-title']),
         E.DIV(E.CLASS('authors'), meta.get('coverpage-author(s)', '')),
         E.DIV(E.CLASS('translator'), meta.get('coverpage-translator', '')),
         E.DIV(E.CLASS('orig-title'), meta.get('coverpage-orig-title', ''))
@@ -167,7 +167,8 @@ def ebook_convert(format, meta):
 if __name__ == '__main__':
     doc, meta = create_document()
     tree = etree.ElementTree(doc)
-    if len(doc.xpath('.//h1')) > 0:
+    # there's at least one H1 from above
+    if len(doc.xpath('.//h1')) > 1:
         meta['level1-toc'] = '//h:h1'
         meta['level2-toc'] = '//h:h2'
         meta['level3-toc'] = '//h:h3'
