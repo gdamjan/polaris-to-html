@@ -122,8 +122,8 @@ def create_head(meta):
     head = html.Element('head')
     etree.SubElement(head, 'meta', charset='utf-8')
     etree.SubElement(head, 'title').text = meta['title']
-    etree.SubElement(head, 'meta', name='Author', content=meta['authors'])
-    etree.SubElement(head, 'meta', name='cover-image', content=meta['cover-image'])
+    if meta['authors']:
+        etree.SubElement(head, 'meta', name='Author', content=meta['authors'])
     etree.SubElement(head, 'meta', name='dc.language', content='sr')
     if 'publisher' in meta:
         etree.SubElement(head, 'meta', name='dc.publisher', content=meta['publisher'])
