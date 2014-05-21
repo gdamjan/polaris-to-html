@@ -118,6 +118,7 @@ def create_cover_page(meta):
     return cover
 
 _css = '''\
+p { text-indent: 1.2em; margin: 0.2em; }
 .my-cover-page .authors {
    font-size: 150%;
    font-weight: bold;
