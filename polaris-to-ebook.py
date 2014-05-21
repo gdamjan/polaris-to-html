@@ -54,9 +54,9 @@ def extract_metadata(fname='naslov.html'):
     head = doc.getroot().find('head')
 
     def reverse_last_first_name(author):
-        return ' '.join(reversed(author.split(' '))).strip()
+        return ' '.join(reversed(author.split(' ', 1))).strip()
 
-    authors, title = head.find('title').text.rsplit(',', 1)
+    authors, _, title = head.find('title').text.rpartition(',')
     meta['authors'] = ' & '.join([ reverse_last_first_name(author) for author in authors.split('/')])
     meta['title'] = title.strip().title()
 
