@@ -15,19 +15,29 @@ def parse_html(fname):
 
 def reformat_chapter(chapter):
     # this is where the content is, ignore all else of the file
-    header, paragraphs = chapter.xpath('.//center/table//tr/td/*')
+    content = chapter.xpath('.//center/table//tr/td/*')
+    header = content[0]
     header.text = header.text.strip()
     yield header
-    p = html.Element('p')
-    p.text = paragraphs.text.strip()
-    yield p
-    for el in paragraphs:
+
+    paragraphs = content[1:]
+    for para in paragraphs:
         p = html.Element('p')
-        if el.tag == 'br':
-            p.text = el.tail.strip()
-        else:
-            p.append(el)
+        p.text = para.text.lstrip().replace('\r\n', '\n')
+        if para.tail:
+            p.tail = para.tail.replace('\r\n', '\n')
         yield p
+        for el in para:
+            p = html.Element('p')
+            if el.tag == 'br':
+                p.text = el.tail.strip()
+                p.tail = '\n'
+            else:
+                el.text = el.text.strip()
+                if el.tail:
+                    el.tail = el.tail.replace('\r\n', '\n')
+                p.append(el)
+            yield p
 
 def get_content_from_files(index='menu.html'):
     index_doc = parse_html(index)
