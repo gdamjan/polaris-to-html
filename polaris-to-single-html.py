@@ -100,3 +100,4 @@ if __name__ == '__main__':
         out.write(html.tostring(tree, method='html', encoding='utf-8',
                                 pretty_print=True,
                                 doctype='<!DOCTYPE html>'))
+    os.symlink(meta['cover-image'], 'cover.jpg')
