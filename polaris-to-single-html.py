@@ -129,6 +129,18 @@ def create_document():
     doc.append(body)
     return doc, meta
 
+def ebook_convert(format, meta):
+    ebook_fname = '%s.%s' % (meta['title'], format)
+    cmd = ['ebook-convert', 'single-page-book.html', ebook_fname,
+         '--cover', meta['cover-image'],
+         '--level1-toc=//h:h2',
+         '--level2-toc=//h:h3',
+         "--page-breaks-before=//*[name()='h2' or name()='h3']"]
+    if 'series' in meta:
+        cmd.append('--series=%s' % meta['series'])
+    if 'series_index' in meta:
+        cmd.append('--series-index=%s' % meta['series_index'])
+    subprocess.call(cmd)
 
 if __name__ == '__main__':
     doc, meta = create_document()
@@ -138,13 +150,6 @@ if __name__ == '__main__':
                                 pretty_print=True,
                                 doctype='<!DOCTYPE html>'))
     if '--azw3' in sys.argv:
-        cmd = ['ebook-convert', 'single-page-book.html', '%s.azw3' % meta['title'],
-             '--cover', meta['cover-image'],
-             '--level1-toc=//h:h2',
-             '--level2-toc=//h:h3',
-             "--page-breaks-before=//*[name()='h2' or name()='h3']"]
-        if 'series' in meta:
-            cmd.append('--series=%s' % meta['series'])
-        if 'series_index' in meta:
-            cmd.append('--series-index=%s' % meta['series_index'])
-        subprocess.call(cmd)
+        ebook_convert('azw3', meta)
+    if '--epub' in sys.argv:
+        ebook_convert('epub', meta)
