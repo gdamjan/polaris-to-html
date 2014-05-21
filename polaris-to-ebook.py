@@ -21,6 +21,8 @@ def reformat_chapter(chapter):
     yield header
 
     paragraphs = content[1:]
+    # remove leading space from the first line in a paragraph, the proper place for indent is css
+    # also replace \r\n with \n on every text node
     for para in paragraphs:
         p = html.Element('p')
         p.text = para.text.lstrip().replace('\r\n', '\n')
@@ -28,16 +30,18 @@ def reformat_chapter(chapter):
             p.tail = para.tail.replace('\r\n', '\n')
         yield p
         for el in para:
-            p = html.Element('p')
             if el.tag == 'br':
-                p.text = el.tail.strip()
+                # create new paragraph for each <br> tag
+                p = html.Element('p')
+                p.text = el.tail.lstrip().replace('\r\n', '\n')
                 p.tail = '\n'
+                yield p
             else:
-                el.text = el.text.strip()
+                # if this is not a br element, just add it to the last <P> element
+                el.text = el.text.replace('\r\n', '\n')
                 if el.tail:
                     el.tail = el.tail.replace('\r\n', '\n')
                 p.append(el)
-            yield p
 
 def get_content_from_files(index='menu.html'):
     index_doc = parse_html(index)
