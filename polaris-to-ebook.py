@@ -149,8 +149,9 @@ def ebook_convert(format, meta):
     ebook_fname = '%s.%s' % (meta['title'], format)
     cmd = ['ebook-convert', 'single-page-book.html', ebook_fname,
          '--cover', meta['cover-image'],
-         '--level1-toc=//h:h2',
-         '--level2-toc=//h:h3',
+         '--level1-toc', meta['level1-toc'],
+         '--level2-toc', meta['level2-toc']
+         '--level3-toc', meta['level3-toc']
          "--page-breaks-before=//*[name()='h2' or name()='h3']"]
     if 'series' in meta:
         cmd.append('--series=%s' % meta['series'])
@@ -161,6 +162,19 @@ def ebook_convert(format, meta):
 if __name__ == '__main__':
     doc, meta = create_document()
     tree = etree.ElementTree(doc)
+    if len(doc.xpath('.//h1')) > 0:
+        meta['level1-toc'] = '//h:h1'
+        meta['level2-toc'] = '//h:h2'
+        meta['level3-toc'] = '//h:h3'
+    elif len(doc.xpath('.//h2')) > 0:
+        meta['level1-toc'] = '//h:h2'
+        meta['level2-toc'] = '//h:h3'
+        meta['level3-toc'] = '//h:h4'
+    else:
+        meta['level1-toc'] = '//h:h3'
+        meta['level2-toc'] = '//h:h4'
+        meta['level3-toc'] = '//h:h5'
+
     with open('single-page-book.html', 'wb') as out:
         out.write(html.tostring(tree, method='html', encoding='utf-8',
                                 pretty_print=True,
