@@ -79,8 +79,8 @@ def extract_metadata(fname='naslov.html'):
 
 def create_cover_page(meta):
     cover = E.DIV(E.CLASS('cover-page'),
-        E.DIV(meta['coverpage-author(s)']),
         E.H1(meta['coverpage-title']),
+        E.DIV(meta['coverpage-author(s)']),
         E.DIV(meta['coverpage-translator']),
         E.DIV(meta['coverpage-origtitle'])
     )
