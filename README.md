@@ -8,5 +8,10 @@ Them, after the script below creates a single .html page for each  book, you can
         --level1-toc '//h:h2' --level2-toc '//h:h3' \
         --page-breaks-before "//*[name()='h1' or name()='h2' or name()='h3']" \
         --cover cover.jpg
-        
-(well the cover thing needs to be fixed/hacked)
+
+To run it on the whole collection:
+
+     find polaris_sf_complete/html/* -type d -print0 |
+     xargs -0 --verbose -P3 -I{}  sh -c "cd {}; polaris-to-ebook.py --epub" &> out.log
+
+kind of ugly with the `sh -c "cd {}; ...` but I'm lazy to implement chdir in the program itself.
