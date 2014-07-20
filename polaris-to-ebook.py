@@ -100,8 +100,15 @@ def extract_metadata(fname='naslov.html'):
     return meta
 
 def create_cover_page(meta):
+    if meta['level1-toc'] == 'h1':
+        HEADER = E.H1
+    elif meta['level1-toc'] == 'h2':
+        HEADER = E.H2
+    else:
+        HEADER = E.H3
+
     cover = E.DIV(E.CLASS('my-cover-page'),
-        E.H1(E.CLASS('title'), meta['coverpage-title']),
+        HEADER(E.CLASS('title'), meta['coverpage-title']),
         E.DIV(E.CLASS('authors'), meta.get('coverpage-author(s)', '')),
         E.DIV(E.CLASS('translator'), meta.get('coverpage-translator', '')),
         E.DIV(E.CLASS('orig-title'), meta.get('coverpage-orig-title', ''))
@@ -151,8 +158,25 @@ def create_document():
     head = create_head(meta)
 
     body = html.Element('body')
-    body.append(create_cover_page(meta))
+    # first get all the (sanitized) content from all the separate html files
     body.extend(get_content_from_files())
+
+    # find the highest header element (alternativelly I could normalize them)
+    if len(body.xpath('.//h1')) > 0:
+        meta['level1-toc'] = 'h1'
+        meta['level2-toc'] = 'h2'
+        meta['level3-toc'] = 'h3'
+    elif len(body.xpath('.//h2')) > 0:
+        meta['level1-toc'] = 'h2'
+        meta['level2-toc'] = 'h3'
+        meta['level3-toc'] = 'h4'
+    else:
+        meta['level1-toc'] = 'h3'
+        meta['level2-toc'] = 'h4'
+        meta['level3-toc'] = 'h5'
+
+    # now insert the cover page before everything
+    body.insert(0, create_cover_page(meta))
 
     doc = html.Element('html')
     doc.append(head)
@@ -163,9 +187,9 @@ def ebook_convert(format, meta):
     ebook_fname = '%s.%s' % (meta['title'], format)
     cmd = ['ebook-convert', 'single-page-book.html', ebook_fname,
          '--cover', meta['cover-image'],
-         '--level1-toc', meta['level1-toc'],
-         '--level2-toc', meta['level2-toc'],
-         '--level3-toc', meta['level3-toc'],
+         '--level1-toc', '//h:%s' % meta['level1-toc'],
+         '--level2-toc', '//h:%s' % meta['level2-toc'],
+         '--level3-toc', '//h:%s' % meta['level3-toc'],
          "--page-breaks-before=//*[name()='h1' or name()='h2' or name()='h3']"
     ]
     if 'series' in meta:
@@ -177,19 +201,6 @@ def ebook_convert(format, meta):
 if __name__ == '__main__':
     doc, meta = create_document()
     tree = etree.ElementTree(doc)
-    # there's at least one H1 from above
-    if len(doc.xpath('.//h1')) > 1:
-        meta['level1-toc'] = '//h:h1'
-        meta['level2-toc'] = '//h:h2'
-        meta['level3-toc'] = '//h:h3'
-    elif len(doc.xpath('.//h2')) > 0:
-        meta['level1-toc'] = '//h:h2'
-        meta['level2-toc'] = '//h:h3'
-        meta['level3-toc'] = '//h:h4'
-    else:
-        meta['level1-toc'] = '//h:h3'
-        meta['level2-toc'] = '//h:h4'
-        meta['level3-toc'] = '//h:h5'
 
     with open('single-page-book.html', 'wb') as out:
         out.write(html.tostring(tree, method='html', encoding='utf-8',
